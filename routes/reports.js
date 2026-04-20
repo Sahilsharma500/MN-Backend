@@ -14,11 +14,11 @@ router.get('/', async (req, res) => {
     const filter = {};
     if (req.query.studentId) filter.studentId = req.query.studentId;
     
-    // Sort by descending startDate so newest reports are first
+    // Sort by descending createdAt so newest generated reports are first
     const reports = await Report.find(filter)
       .populate('studentId', 'name studentId class')
       .populate('teacherId', 'name')
-      .sort({ startDate: -1 });
+      .sort({ createdAt: -1 });
       
     res.json(reports);
   } catch (error) {
