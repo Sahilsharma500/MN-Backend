@@ -64,40 +64,31 @@ router.post('/generate', async (req, res) => {
 
     const ai = new GoogleGenAI({ apiKey });
 
-    const prompt = `
-      Generate a warm, simple, and narrative periodic report (fortnightly) for a parent about their child ${student.name}.
-      
-      IMPORTANT: 
-      - DO NOT include any numerical scales (e.g., "4/5" or "80%"). 
-      - Use warm, simple language that is easy for parents to read.
-      - Focus on storytelling and growth.
-      - The teacher's name is ${teacher.name}. Write as if the teacher is speaking directly to the parent.
-      
-      Student Details:
-      - Name: ${student.name}
-      - Class: ${student.section ? student.section.name : 'Unassigned'}
-      - Teacher: ${teacher.name}
-      - Period: ${format(new Date(startDate), 'MMM d')} to ${format(new Date(endDate), 'MMM d, yyyy')}
+    const prompt = `Generate a warm and professional fortnightly progress report for a parent about their child ${student.name}.
 
-      Observation Data for the last 14 days:
-      ${observations.map(d => `
-        Date: ${format(new Date(d.date), 'MMM d')}
-        Mood: ${d.mood}
-        Dimensions (for your context only, do not show numbers): Emotional: ${d.dimensions?.emotional || 0}, Social: ${d.dimensions?.social || 0}, Cognitive: ${d.dimensions?.cognitive || 0}, Physical: ${d.dimensions?.physical || 0}, Creative: ${d.dimensions?.creative || 0}
-        Tags: ${(d.tags || []).join(', ')}
-        Daily Highlight/Special Note: ${d.highlight || ''}
-      `).join('\n')}
-      
-      Requirements for the report:
-      1. Executive Summary: A warm opening from ${teacher.name} summarizing the child's overall well-being.
-      2. Our Journey Together (Dimension Analysis): Narrate the child's progress in the 5 dimensions (Emotional, Social, Cognitive, Physical, Creative). Use bullet points for specific observations within each dimension. Focus on what they enjoyed and how they grew. NO NUMBERS.
-      3. Memorable Moments: A bulleted list summarizing the daily highlights and special moments.
-      4. Looking Ahead: 3-4 simple, warm suggestions for parents to try at home to keep the momentum going, presented as a clear list.
-      
-      Tone: Warm, simple, encouraging, and personal.
-      Length: Approximately 400-600 words.
-      Format: Use clear headings and bullet points for readability. Avoid long, dense paragraphs.
-    `;
+Student Details:
+- Name: ${student.name}
+- Class: ${student.section ? student.section.name : 'Unassigned'}
+- Teacher: ${teacher.name}
+- Period: ${format(new Date(startDate), 'MMM d')} to ${format(new Date(endDate), 'MMM d, yyyy')}
+
+Observation Data for the last 14 days:
+${observations.map(d => `
+  Date: ${format(new Date(d.date), 'MMM d')}
+  Mood: ${d.mood}
+  Dimensions (for your context only, do not show numbers): Emotional: ${d.dimensions?.emotional || 0}, Social: ${d.dimensions?.social || 0}, Cognitive: ${d.dimensions?.cognitive || 0}, Physical: ${d.dimensions?.physical || 0}, Creative: ${d.dimensions?.creative || 0}
+  Tags: ${(d.tags || []).join(', ')}
+  Daily Highlight/Special Note: ${d.highlight || ''}
+`).join('\n')}
+
+Requirements for the report:
+1. Executive Summary (A note from the teacher): A warm opening from ${teacher.name} summarizing the child's overall well-being. IMPORTANT: Keep this to a maximum of 2 lines.
+2. Our Journey Together (Dimension Analysis): Narrate the child's progress in the 5 dimensions (Emotional, Social, Cognitive, Physical, Creative). Use bullet points for specific observations within each dimension. Focus on what they enjoyed and how they grew. NO NUMBERS.
+3. Looking Ahead: 3-4 simple, warm suggestions for parents to try at home to keep the momentum going, presented as a clear list.
+
+Tone: Warm, simple, encouraging, and personal.
+Length: Approximately 300-500 words.
+Format: Use clear headings and bullet points for readability. Avoid long, dense paragraphs.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
